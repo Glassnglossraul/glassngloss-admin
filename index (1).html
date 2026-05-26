@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Glassngloss — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="login" id="loginEl">
+  <div class="lg-logo">Glassngloss Wear</div>
+  <div class="lg-sub">Admin Dashboard</div>
+  <div class="lg-box">
+    <div class="lg-ico">🔒</div>
+    <h2>Welcome back</h2>
+    <p>Enter your admin password to manage your store.</p>
+    <div class="pw-wrap">
+      <input class="pw-inp" id="pwInp" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="current-password"/>
+      <button class="eye" onclick="toggleEye()">👁</button>
+    </div>
+    <div class="lg-err" id="lgErr"></div>
+    <button class="btn-login" onclick="doLogin()">Enter Dashboard →</button>
+    <div class="lg-hint">Default password: <strong>glassngloss</strong></div>
+  </div>
+</div>
+
+<div id="app" style="display:none;width:100%">
+<nav class="sb">
+  <div class="sb-logo"><div class="sb-lt">Glassngloss<br>Wear</div><div class="sb-tag">Admin Dashboard</div></div>
+  <div class="sb-nav">
+    <div class="sb-sec">Main</div>
+    <a class="sb-a on" onclick="showPage('dash',this)"><span class="sb-ico">◈</span> Dashboard</a>
+    <a class="sb-a" onclick="showPage('products',this)"><span class="sb-ico">◻</span> Products</a>
+    <div class="sb-sec">Store</div>
+    <a class="sb-a" onclick="showPage('slides',this)"><span class="sb-ico">▣</span> Slides & Ticker</a>
+    <a class="sb-a" onclick="showPage('content',this)"><span class="sb-ico">✦</span> Store Content</a>
+    <a class="sb-a" onclick="showPage('settings',this)"><span class="sb-ico">⚙</span> Settings</a>
+  </div>
+  <div class="sb-bot">
+    <div class="sb-user"><div class="sb-av">G</div><div><div class="sb-nm">Admin</div><div class="sb-rl">Store Owner</div></div></div>
+    <button class="sb-out" onclick="doLogout()">Log out</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div class="tb-t" id="tbTitle">Dashboard</div>
+    <a class="view-store" href="../shop/" target="_blank">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      View Store
+    </a>
+  </div>
+  <div class="content">
+    <div class="page on" id="page-dash">
+      <div class="stats" id="statsEl"></div>
+      <div class="sec-hd"><h2>Recent Products</h2><button class="btn-pr" onclick="openDrawer()">+ Add Product</button></div>
+      <div class="tbl-wrap"><table><thead><tr><th>Media</th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="dashBody"></tbody></table></div>
+    </div>
+    <div class="page" id="page-products">
+      <div class="sec-hd"><h2>All Products</h2><button class="btn-pr" onclick="openDrawer()">+ Add Product</button></div>
+      <div class="tbl-wrap">
+        <div class="tbl-bar">
+          <button class="tpill on" onclick="setTF('all',this)">All</button>
+          <span id="catPills"></span>
+          <input class="tsrch" id="tsrch" placeholder="Search…" oninput="renderTable()"/>
+        </div>
+        <table><thead><tr><th>Media</th><th>Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th></tr></thead><tbody id="prodBody"></tbody></table>
+      </div>
+    </div>
+    <div class="page" id="page-slides">
+      <div class="sec-hd"><h2>Slider & Ticker</h2><button class="btn-pr" onclick="openSlideDrawer()">+ Add Slide</button></div>
+      <div class="slides-grid" id="slidesGrid"></div>
+      <div class="tick-box">
+        <h3>Announcement Ticker</h3>
+        <p>The scrolling bar above the slider on your store.</p>
+        <div class="tick-items" id="tickItems"></div>
+        <button class="btn-tick-add" onclick="addTickRow()">+ Add Message</button>
+        <div style="margin-top:1rem"><button class="btn-pr" style="width:auto;padding:.5rem 1.2rem" onclick="saveTicker()">Save Ticker</button></div>
+      </div>
+    </div>
+    <!-- STORE CONTENT PAGE -->
+    <div class="page" id="page-content">
+      <div class="sec-hd"><h2>Store Content</h2></div>
+      <div class="sets-grid">
+
+        <div class="set-card" style="grid-column:1/-1">
+          <div class="set-title">About Us</div>
+          <div class="set-sub">Shown in the About section of your shop. Leave blank to hide it.</div>
+          <div class="fg"><textarea class="fta" id="cfg-about" rows="5" placeholder="Tell your story — who you are, what you make, why it matters…"></textarea></div>
+          <button class="btn-ss" onclick="saveContent()" style="width:auto;padding:.6rem 1.5rem;margin-top:.2rem">Save About</button>
+        </div>
+
+        <div class="set-card" style="grid-column:1/-1">
+          <div class="set-title">Social Links</div>
+          <div class="set-sub">These appear in the footer of your shop. Leave blank to hide a platform.</div>
+          <div class="soc-edit-grid">
+            <div class="fg"><label class="fl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:.35rem"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+              Instagram URL
+            </label><input class="fi" id="soc-ig" placeholder="https://instagram.com/yourhandle"/></div>
+            <div class="fg"><label class="fl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:.35rem"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+              Facebook URL
+            </label><input class="fi" id="soc-fb" placeholder="https://facebook.com/yourpage"/></div>
+            <div class="fg"><label class="fl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:.35rem"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              LinkedIn URL
+            </label><input class="fi" id="soc-li" placeholder="https://linkedin.com/company/yourco"/></div>
+            <div class="fg"><label class="fl">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:.35rem"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              WhatsApp Number
+            </label><input class="fi" id="soc-wa" placeholder="919880384777 (with country code, no +)"/></div>
+          </div>
+          <button class="btn-ss" onclick="saveContent()" style="width:auto;padding:.6rem 1.5rem;margin-top:.4rem">Save Socials</button>
+        </div>
+
+        <div class="set-card" style="grid-column:1/-1">
+          <div class="set-title">Footer Tagline</div>
+          <div class="set-sub">The small line of text shown below your logo in the footer.</div>
+          <div class="fg"><input class="fi" id="cfg-tagline-footer" placeholder="Handcrafted · Limited Runs · Shipped with Care"/></div>
+          <button class="btn-ss" onclick="saveContent()" style="width:auto;padding:.6rem 1.5rem;margin-top:.2rem">Save Tagline</button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="page" id="page-settings">
+      <div class="sec-hd"><h2>Settings</h2></div>
+      <div class="sets-grid">
+        <div class="set-card">
+          <div class="set-title">Notification Contacts</div>
+          <div class="set-sub">Where order requests are sent.</div>
+          <div class="fg"><label class="fl">WhatsApp (with country code)</label><input class="fi" id="cfg-wa" placeholder="+91 98765 43210"/></div>
+          <div class="fg"><label class="fl">Email Address</label><input class="fi" id="cfg-email" placeholder="orders@glassngloss.com"/></div>
+          <button class="btn-ss" onclick="saveConfig()">Save Contacts</button>
+        </div>
+        <div class="set-card">
+          <div class="set-title">Shop Info</div>
+          <div class="set-sub">Shown in order notifications.</div>
+          <div class="fg"><label class="fl">Shop Name</label><input class="fi" id="cfg-name" placeholder="Glassngloss Wear"/></div>
+          <div class="fg"><label class="fl">Tagline</label><input class="fi" id="cfg-tag" placeholder="Wear the light."/></div>
+          <button class="btn-ss" onclick="saveConfig()">Save Info</button>
+        </div>
+        <div class="set-card">
+          <div class="set-title">Change Password</div>
+          <div class="set-sub">Stored in your browser only.</div>
+          <div class="fg"><label class="fl">Current Password</label><input class="fi" id="pw-cur" type="password" placeholder="Current password"/></div>
+          <div class="fg"><label class="fl">New Password</label><input class="fi" id="pw-new" type="password" placeholder="Min 4 characters"/></div>
+          <div class="fg"><label class="fl">Confirm</label><input class="fi" id="pw-con" type="password" placeholder="Confirm new password"/></div>
+          <button class="btn-ss" onclick="changePw()">Update Password</button>
+        </div>
+        <div class="set-card dz">
+          <div class="set-title">Danger Zone</div>
+          <div class="set-sub">These actions delete data from Supabase permanently.</div>
+          <button class="btn-dng" onclick="clearAllProducts()">Delete All Products</button>
+          <button class="btn-dng" onclick="clearAllSlides()">Delete All Slides</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PRODUCT DRAWER -->
+<div class="drw-shade" id="dShade" onclick="closeDrawer()"></div>
+<div class="drw" id="drawer">
+  <div class="drw-hd"><h3 id="drwTitle">Add Product</h3><button class="drw-x" onclick="closeDrawer()">✕</button></div>
+  <div class="drw-body">
+    <div class="fg">
+      <div class="media-hdr">
+        <span class="media-hdr-l">Photos &amp; Videos</span>
+        <span class="media-hdr-r">First item = cover · Click to set cover</span>
+      </div>
+      <div class="media-grid" id="mediaGrid">
+        <div class="m-add-btn"><input type="file" accept="image/*,video/*" multiple onchange="addMediaFiles(event)"/><span class="plus">＋</span><small>Add Images<br>&amp; Videos</small></div>
+      </div>
+      <div class="media-tip">JPG, PNG, WEBP, MP4, MOV supported. First item shows as the store cover.</div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Product Name *</label><input class="fi" id="f-name" placeholder="e.g. Glass Slip Dress"/></div>
+      <div class="fg"><label class="fl">Category *</label><input class="fi" id="f-cat" placeholder="Dresses, Tops…"/></div>
+    </div>
+    <div class="fg"><label class="fl">Description</label><textarea class="fta" id="f-desc" placeholder="Describe this piece…"></textarea></div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Price *</label><input class="fi" id="f-price" placeholder="₹2,499"/></div>
+      <div class="fg"><label class="fl">Stock (units available)</label><input class="fi" id="f-stock" type="number" min="0" placeholder="0"/></div>
+    </div>
+    <div class="fg"><label class="fl">Status</label>
+      <select class="fsel" id="f-status"><option value="available">Available</option><option value="new">New Arrival</option><option value="sold">Sold Out</option></select>
+    </div>
+  </div>
+  <div class="drw-ft">
+    <button class="btn-can" onclick="closeDrawer()">Cancel</button>
+    <button class="btn-save" id="saveBtn" onclick="saveProduct()">Save Product</button>
+  </div>
+</div>
+
+<!-- SLIDE DRAWER -->
+<div class="drw-shade" id="sdShade" onclick="closeSlideDrawer()"></div>
+<div class="drw" id="slideDrawer">
+  <div class="drw-hd"><h3 id="sdTitle">Add Slide</h3><button class="drw-x" onclick="closeSlideDrawer()">✕</button></div>
+  <div class="drw-body">
+    <div class="fg">
+      <label class="fl">Slide Image</label>
+      <div style="position:relative;width:100%;aspect-ratio:16/9;border-radius:4px;overflow:hidden;border:1px dashed var(--bd2);background:var(--sf2);cursor:pointer" id="sdImgBox">
+        <input type="file" accept="image/*" onchange="sdPreview(event)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2"/>
+        <div id="sdPh" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:.4rem;pointer-events:none">
+          <span style="font-size:2rem;opacity:.25">🖼</span>
+          <small style="font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mu)">Click to upload image</small>
+        </div>
+        <img id="sdPrev" src="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"/>
+        <button id="sdClrBtn" onclick="clearSdImg(event)" style="display:none;position:absolute;top:.5rem;right:.5rem;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.2);color:#fff;width:26px;height:26px;border-radius:50%;font-size:.8rem;cursor:pointer;z-index:3;align-items:center;justify-content:center">✕</button>
+      </div>
+    </div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Tag Type</label>
+        <select class="fsel" id="sd-tag"><option value="new">New Drop</option><option value="sale">Sale / Offer</option><option value="event">Event</option><option value="drop">Just Dropped</option></select>
+      </div>
+      <div class="fg"><label class="fl">Tag Label</label><input class="fi" id="sd-taglabel" placeholder="e.g. New Drop"/></div>
+    </div>
+    <div class="fg"><label class="fl">Heading *</label><input class="fi" id="sd-heading" placeholder="e.g. Summer Glass Collection"/></div>
+    <div class="fg"><label class="fl">Subtext</label><input class="fi" id="sd-sub" placeholder="e.g. Limited stock — order now."/></div>
+    <div class="f2">
+      <div class="fg"><label class="fl">Button Text</label><input class="fi" id="sd-cta" placeholder="Shop Now"/></div>
+      <div class="fg"><label class="fl">Visibility</label>
+        <select class="fsel" id="sd-active"><option value="true">Visible</option><option value="false">Hidden</option></select>
+      </div>
+    </div>
+  </div>
+  <div class="drw-ft">
+    <button class="btn-can" onclick="closeSlideDrawer()">Cancel</button>
+    <button class="btn-save" id="sdSaveBtn" onclick="saveSlide()">Save Slide</button>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="del-bd" id="delBd">
+  <div class="del-box">
+    <div class="del-ico">🗑</div><h3>Delete?</h3>
+    <p id="delMsg">This will permanently remove this item.</p>
+    <div class="del-acts">
+      <button class="btn-cadl" onclick="closeDelBd()">Cancel</button>
+      <button class="btn-cfdl" onclick="confirmDel()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
